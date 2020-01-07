@@ -1,0 +1,74 @@
+<?php
+$inputs = $this->getInputParams();
+?>
+<div class="estimate_block clearfix"  style="clear:both;">
+   <div class="block-content">
+        <div class='estimate-form'>
+            <form name="estimate_form" method="post">
+                <div class="form-group clearfix">
+                    <div class="col-md-4" style="padding-left:0px">
+                        <label for="post_code"><?php echo $this->__('Postal Code'); ?><?php if ($view==false): ?><span class="required">*</span><?php endif; ?></label>
+                    </div>
+                    <div class="col-md-8" style="padding-right:0px">
+                        <input type='text' name='post_code' id='post_code' onkeyup="getSuburb(this.value)" value='<?php echo $this->getPostcode(); ?>' maxlength="4" class="input-text col-sm-12" />
+                    </div>
+                </div>
+                <div class="form-group clearfix">
+                    <div class="col-md-4" style="padding-left:0px">
+                        <label for="street"><?php echo $this->__('Suburb/City'); ?><?php if ($view==false): ?><span class="required">*</span><?php endif; ?>	</label>
+                    </div>
+                    <div class="col-md-8" style="padding-right:0px">
+                        <select name="street" id="street" class="input-text col-sm-12">
+                            <option value="">Please Select</option>
+                        </select>
+                    </div>
+                </div>
+                <input type='hidden' name='country_code' id='country_code' value='AU' />
+                <div class="row clearfix" style="margin-top:10px;">
+                    <div class="specialsec clearfix">
+                        <p class="cartbtn viswa-cart-btn" style="text-align:right !important;"><a style="padding: 6px 27px 7px 14px!important;"  class="btn btn-primary blue_btn" role="button">Get a Quote</a><i class="" style="margin: -4px 0 0px -18px !important; border-color:#f7f7f7 !important;"><img src="<?php echo $this->getSkinUrl('images/note_icon.png'); ?>" id="paper" style="margin-top:0px !important;" /></i></p>
+                    </div>
+                    <div id='estimate_items'>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var estimateForm = new VarienForm('estimate_form', true);
+    function getSuburb(postcode) {
+        if (postcode.length < 4) return;
+        new Ajax.Request("<?php echo $this->getSearchUrl() ?>", {
+            parameters: {isAjax: 1, method: 'POST', postcode: postcode},
+            onLoad: $('street').update('Loading...'),
+            onSuccess: function(transport) {
+                if (transport.responseText.isJSON()) {
+                    var response = transport.responseText.evalJSON();
+                    if (response.error) {
+                        $('estimate_items').update(postcode+'-'+response.error);
+                        $('post_code').value='';
+                        return false;
+                    } else if (response.success) {
+                        $('estimate_items').update('');
+                        for (var option in $('street')) $('street').remove(option);
+                        addOption($('street'), '', 'Please Select');
+                        for (i=0; i<response.suburb.length; i++)
+                            addOption($('street'), response.suburb[i], response.suburb[i]);
+                    }
+                }
+                return true;
+            }
+        });
+    }
+
+    function addOption(selectbox, value, text) {
+        var optn = document.createElement("OPTION");
+        optn.text = text;
+        optn.value = value;
+        selectbox.options.add(optn);
+    }
+    //<![CDATA[
+    //]]>
+
+</script>
