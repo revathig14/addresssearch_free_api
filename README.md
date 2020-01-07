@@ -1,7 +1,7 @@
 # address search free api
 Spenidng more money in address lookups - Here is the free api for 10k lookups per day per user.
 
-Free address search API - Sample code attached for Magento 1
+Free address search API - Sample code attached for Magento 1  
 Reference: http://www.geonames.org/export/web-services.html  
 
 STEPS:  
